@@ -15,7 +15,7 @@ public class FacialEmotion : ImageResultsListener
 	public float currentJoy;
 	public float currentSadness;
 	public float currentDisgust;
-	public Image emoji;
+	//public Image emoji;
 
 	//expressions
 	public float currentSmile;
@@ -108,14 +108,14 @@ public class FacialEmotion : ImageResultsListener
 
 
 
-
-			if (currentSurprise > currentJoy && currentSurprise > currentSadness) {
-				emoji.sprite = surprise;
-			} else if (currentJoy > currentSurprise && currentJoy > currentSadness) {
-				emoji.sprite = happy;
-			} else {
-				emoji.sprite = sad;
-			}
+//
+//			if (currentSurprise > currentJoy && currentSurprise > currentSadness) {
+//				emoji.sprite = surprise;
+//			} else if (currentJoy > currentSurprise && currentJoy > currentSadness) {
+//				emoji.sprite = happy;
+//			} else {
+//				emoji.sprite = sad;
+//			}
 
 			face.Expressions.TryGetValue(Expressions.Smile, out currentSmile);
 			faceVector [9] = currentSmile/100;

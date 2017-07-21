@@ -9,12 +9,13 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
+using LitJson;
 
 public class RecordSpeech: MonoBehaviour
 {
 	private int m_RecordingRoutine = 0;
 
-
+	private Mapper mapper;
 	private string m_MicrophoneID = null;
 	private AudioClip m_Recording = null;
 	private int m_RecordingBufferSize = 2;
@@ -25,12 +26,25 @@ public class RecordSpeech: MonoBehaviour
 	// set public array
 	public static Dictionary<string, double> tone_dict;
 	public Text emotionText;
+	public static string speechText;
 
 	private SpeechToText m_SpeechToText = new SpeechToText();
+
+	public Image emojiImage;
+
+	public Sprite happySprite;
+	public Sprite sadSprite;
+	public Sprite angrySprite;
+	public Sprite disgustSprite;
+	public Sprite excitedSprite;
+	public Sprite confidentSprite;
+	public Sprite frustratedSprite;
+	public Sprite fearSprite;
 
 	void Start()
 	{
 		LogSystem.InstallDefaultReactors();
+		mapper = new Mapper(emojiImage, happySprite, sadSprite, angrySprite, disgustSprite, excitedSprite, confidentSprite, frustratedSprite, fearSprite, tone_dict);
 		Log.Debug("ExampleStreaming", "Start();");
 		faceNormalizeVector = new double[24];
 		Active = true;
@@ -156,6 +170,8 @@ public class RecordSpeech: MonoBehaviour
 					string text = alt.transcript;
 					Log.Debug("Streaming", string.Format("{0} ({1}, {2:0.00})\n", text, res.final ? "Final" : "Interim", alt.confidence));
 					if (res.final) {
+						speechText = text;
+						NluSpeech.nluSpeech ();
 						faceNormalizeVector = new double[24];
 						numInstances++;
 						for (int i = 0; i < 24; i++) {
@@ -230,6 +246,10 @@ public class RecordSpeech: MonoBehaviour
 		tone_dict ["NoseWrinkler"] = faceNormalizeVector [21];
 		tone_dict ["Smirk"] = faceNormalizeVector [22];
 		tone_dict ["UpperLipRaise"] = faceNormalizeVector [23];
+
+		mapper.emotDict = tone_dict;
+		mapper.map ();
+
 		int y = 0;
 		double currentMax = 0;
 		string maxEmotWatson = "Happy";
@@ -265,5 +285,24 @@ public class RecordSpeech: MonoBehaviour
 			y++;
 		}
 		emotionText.text = "Primary Emotion: " + "\n" + maxEmotWatson + "\n" + maxBig5 + "\n" + maxBigThree + "\n" + maxEmotFace;
+	}
+
+	static public bool JsonContainsKey(JsonData data,string key)
+	{
+		bool result = false;
+		if(data == null)
+			return result;
+		if(!data.IsObject)
+		{
+			return result;
+		}
+		IDictionary tdictionary = data as IDictionary;
+		if(tdictionary == null)
+			return result;
+		if(tdictionary.Contains(key))
+		{
+			result = true;
+		}
+		return result;
 	}
 }

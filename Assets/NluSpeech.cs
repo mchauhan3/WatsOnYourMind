@@ -2,11 +2,15 @@
 using IBM.Watson.DeveloperCloud.Logging;
 using IBM.Watson.DeveloperCloud.Services.NaturalLanguageUnderstanding.v1;
 using UnityEngine;
+using LitJson;
+using UnityEngine.UI;
 
 public class NluSpeech : MonoBehaviour
 {
 	static NaturalLanguageUnderstanding m_NaturalLanguageUnderstanding = new NaturalLanguageUnderstanding();
 	private static fsSerializer sm_Serializer = new fsSerializer();
+	public Text topics;
+
 
 	public static void nluSpeech()
 	{
@@ -59,13 +63,11 @@ public class NluSpeech : MonoBehaviour
 		};
 				
 		Log.Debug("ExampleNaturalLanguageUnderstandingV1", "attempting to analyze...");
-		m_NaturalLanguageUnderstanding.Analyze (OnAnalyze, parameters);
-//		if (!m_NaturalLanguageUnderstanding.Analyze (OnAnalyze, parameters))
-//			Log.Debug ("ExampleNaturalLanguageUnderstandingV1", "Failed to get models.");
-//		else {
-//			Log.Debug ("NLU", "Nicole: " + analysisResults.sentiment.document.score);
+		if (!m_NaturalLanguageUnderstanding.Analyze (OnAnalyze, parameters))
+			Log.Debug ("ExampleNaturalLanguageUnderstandingV1", "Failed to get models.");
+		//else
+			//Log.Debug ("NLU", "Nicole: " + analysisResults.sentiment.document.score);
 //			Log.Debug ("NLU", "NicoleFuck: " + analysisResults.keywords [0]);
-//		}
 	}
 
 	private static void OnGetModels(ListModelsResults resp, string customData)
@@ -82,5 +84,27 @@ public class NluSpeech : MonoBehaviour
 		fsData data = null;
 		sm_Serializer.TrySerialize(resp, out data).AssertSuccess();
 		Log.Debug("ExampleNaturalLanguageUnderstandingV1", "AnalysisResults: {0}", data.ToString());
+		JsonData obj = JsonMapper.ToObject (data.ToString ());
+		Debug.Log (obj["concepts"]);
+		string allText = "Topics: "+ "\n";
+		if (RecordSpeech.JsonContainsKey (obj, "concepts")) {
+			for (int j = 0; j < obj ["concepts"].Count; j++) {
+				//Debug.Log (obj ["concepts"] [j] ["text"]);
+				if (RecordSpeech.JsonContainsKey (obj ["concepts"] [j], "text")) {
+				
+					allText += (string) (obj ["concepts"] [j] ["text"] + "\n");
+				}
+			}
+		}
+		allText += "Keywords: " + "\n";
+		if (RecordSpeech.JsonContainsKey(obj, "keywords")) {
+			for (int j = 0; j < obj ["keywords"].Count; j++) {
+				//Debug.Log (obj ["concepts"] [j] ["text"]);
+				if (RecordSpeech.JsonContainsKey (obj ["keywords"] [j], "text")) {
+					allText += (string) (obj ["keywords"] [j] ["text"] + "\n");
+				}
+			}
+		}
+		GameObject.Find("TopicsText").GetComponent<Text>().text = allText;
 	}
 }
