@@ -8,6 +8,7 @@ using IBM.Watson.DeveloperCloud.Services.ToneAnalyzer.v3;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class RecordSpeech: MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class RecordSpeech: MonoBehaviour
 	public static int numInstances = 0;
 	// set public array
 	public static Dictionary<string, double> tone_dict;
+	public Text emotionText;
 
 	private SpeechToText m_SpeechToText = new SpeechToText();
 
@@ -228,8 +230,40 @@ public class RecordSpeech: MonoBehaviour
 		tone_dict ["NoseWrinkler"] = faceNormalizeVector [21];
 		tone_dict ["Smirk"] = faceNormalizeVector [22];
 		tone_dict ["UpperLipRaise"] = faceNormalizeVector [23];
+		int y = 0;
+		double currentMax = 0;
+		string maxEmotWatson = "Happy";
+		string maxBig5 = null;
+		string maxBigThree = null;
+		string maxEmotFace = null;
 		foreach (KeyValuePair<string, double> entry in tone_dict) {
 			Debug.Log (entry.Key + " : " + entry.Value);
+			if ((y == 0 && y == 5) && ((y == 8 && y == 13) && y == 20)){
+				currentMax = 0;
+			}
+			if (y < 5) {
+				if (entry.Value > currentMax) {
+					currentMax = entry.Value;
+					maxEmotWatson = entry.Key;
+				} 
+			} else if (y < 8) {
+				if (entry.Value > currentMax) {
+					currentMax = entry.Value;
+					maxBig5 = entry.Key;
+				}
+			} else if (y < 13) {
+				if (entry.Value > currentMax) {
+					currentMax = entry.Value;
+					maxBigThree = entry.Key;
+				}
+			} else if (y < 20) {
+				if (entry.Value > currentMax) {
+					currentMax = entry.Value;
+					maxEmotFace = entry.Key;
+				}
+			}
+			y++;
 		}
+		emotionText.text = "Primary Emotion: " + "\n" + maxEmotWatson + "\n" + maxBig5 + "\n" + maxBigThree + "\n" + maxEmotFace;
 	}
 }

@@ -39,6 +39,12 @@ public class FacialEmotion : ImageResultsListener
 	public Sprite sad;
 	public Sprite surprise;
 
+	public Image redBar;
+	public Image valenceCircle;
+
+	public Sprite redCircle;
+	public Sprite greenCircle;
+
 	public FeaturePoint[] featurePointsList;
 
 	void Start() {
@@ -87,11 +93,18 @@ public class FacialEmotion : ImageResultsListener
 			faceVector [6] = currentFear/100;
 
 			face.Emotions.TryGetValue(Emotions.Valence, out currentValence);
-			faceVector [7] = currentValence/100;
+			currentValence = currentValence / 100f;
+			faceVector [7] = currentValence;
+			if (currentValence < 0) {
+				valenceCircle.sprite = redCircle;
+			} else {
+				valenceCircle.sprite = greenCircle;
+			}
+
 
 			face.Emotions.TryGetValue(Emotions.Engagement, out currentEngagement);
 			faceVector [8] = currentEngagement/100;
-
+			redBar.fillAmount = currentEngagement / 100;
 
 
 
