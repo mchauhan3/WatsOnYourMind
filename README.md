@@ -10,6 +10,6 @@
 What is WatsOnYourMind?
 Glad you asked!
 
-WatsOnYourMind is an app for wearable devices to help patients with Autism Spectrum Disorder understand facial and speech cues during real-time communication.
+WatsOnYourMind is an app for wearable devices to help people with Autism Spectrum Disorder understand facial and speech cues during real-time communication.
 
 Developed using Unity3D, C#and IBM Watson SpeechtoText, Cognitive Services, Sentiment Analysis and Natural Language Understanding
